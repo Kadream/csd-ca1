@@ -35,7 +35,7 @@ jobs:
         reports: 'coverage/**/coverage.cobertura.xml'
         targetdir: 'coveragereport'
         reporttypes: 'MarkdownSummaryGithub'
-        classfilters: '-AspNetCoreGeneratedDocument.*;-BPCalculator.Program;-BPCalculator.Startup'
+        classfilters: '-BPCalculator.Pages.Pages_*;-BPCalculator.Pages.Shared.*;-BPCalculator.Program;-BPCalculator.Startup'
         customSettings: 'minimumCoverageThresholds:lineCoverage=80'
     - name: Publish coverage summary
       if: always()
