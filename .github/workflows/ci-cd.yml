@@ -27,5 +27,16 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore --configuration Release
-    - name: Test
-      run: dotnet test --no-build --configuration Release --verbosity normal
+    - name: Test (with code coverage)
+      run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+    - name: Coverage report (minimum 80% line coverage)
+      uses: danielpalme/ReportGenerator-GitHub-Action@v5
+      with:
+        reports: 'coverage/**/coverage.cobertura.xml'
+        targetdir: 'coveragereport'
+        reporttypes: 'MarkdownSummaryGithub'
+        classfilters: '-AspNetCoreGeneratedDocument.*;-BPCalculator.Program;-BPCalculator.Startup'
+        customSettings: 'minimumCoverageThresholds:lineCoverage=80'
+    - name: Publish coverage summary
+      if: always()
+      run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
