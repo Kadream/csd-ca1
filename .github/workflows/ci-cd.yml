@@ -40,3 +40,10 @@ jobs:
     - name: Publish coverage summary
       if: always()
       run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+    - name: Publish
+      run: dotnet publish BPCalculator/BPCalculator.csproj --no-build --configuration Release --output ./publish
+    - name: Upload artifact (release candidate)
+      uses: actions/upload-artifact@v7
+      with:
+        name: bpcalculator
+        path: ./publish
