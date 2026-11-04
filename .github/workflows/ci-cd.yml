@@ -1,5 +1,6 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+# CI/CD pipeline for the Blood Pressure Category Calculator
+# CI (every PR and main): build, unit + BDD tests, code coverage (80% gate), package
+# CD (main only): provision Azure with Bicep -> deploy to staging slot -> approval -> swap to production
 
 name: CI/CD
 
@@ -8,15 +9,18 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-    
+  workflow_dispatch:   # "Run workflow" button = start the environment and deploy
+
 permissions:
   contents: read
-  
+
+env:
+  AZURE_RESOURCE_GROUP: rg-csd-ca1
+  AZURE_WEBAPP_NAME: kadream-bpcalc-ca1
+
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v7
     - name: Setup .NET
@@ -47,3 +51,86 @@ jobs:
       with:
         name: bpcalculator
         path: ./publish
+
+  provision:
+    name: Provision Azure infrastructure (Bicep)
+    needs: build
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    outputs:
+      stagingUrl: ${{ steps.bicep.outputs.stagingUrl }}
+      productionUrl: ${{ steps.bicep.outputs.productionUrl }}
+    steps:
+    - uses: actions/checkout@v7
+    - name: Azure login (OIDC, no stored password)
+      uses: azure/login@v3
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Deploy Bicep template
+      id: bicep
+      run: |
+        az deployment group create \
+          --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+          --template-file infra/main.bicep \
+          --parameters appName=${{ env.AZURE_WEBAPP_NAME }} \
+          --query properties.outputs --output json > outputs.json
+        echo "stagingUrl=$(jq -r .stagingUrl.value outputs.json)" >> $GITHUB_OUTPUT
+        echo "productionUrl=$(jq -r .productionUrl.value outputs.json)" >> $GITHUB_OUTPUT
+
+  deploy-staging:
+    name: Deploy to staging slot
+    needs: provision
+    runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ needs.provision.outputs.stagingUrl }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Download artifact (same build as tested)
+      uses: actions/download-artifact@v8
+      with:
+        name: bpcalculator
+        path: ./publish
+    - name: Azure login (OIDC, no stored password)
+      uses: azure/login@v3
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Deploy to staging slot
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ env.AZURE_WEBAPP_NAME }}
+        slot-name: staging
+        package: ./publish
+    - name: Smoke test (staging)
+      run: curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-all-errors --output /dev/null ${{ needs.provision.outputs.stagingUrl }}
+
+  swap-production:
+    name: Swap staging to production (blue/green)
+    needs: [provision, deploy-staging]
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ needs.provision.outputs.productionUrl }}
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Azure login (OIDC, no stored password)
+      uses: azure/login@v3
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Swap staging slot into production
+      run: az webapp deployment slot swap --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} --slot staging --target-slot production
+    - name: Smoke test (production)
+      run: curl --fail --silent --show-error --retry 12 --retry-delay 10 --retry-all-errors --output /dev/null ${{ needs.provision.outputs.productionUrl }}
