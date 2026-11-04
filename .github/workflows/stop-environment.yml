@@ -1,0 +1,36 @@
+# "Stop" button: deletes the web app and App Service plan so Azure billing stops.
+# Runs on demand (Actions > Stop environment > Run workflow) and automatically every night.
+# The resource group, managed identity and settings stay; the CI/CD pipeline recreates the app with Bicep.
+
+name: Stop environment
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 1 * * *'   # every night at 01:00 UTC
+
+permissions:
+  contents: read
+
+env:
+  AZURE_RESOURCE_GROUP: rg-csd-ca1
+  AZURE_WEBAPP_NAME: kadream-bpcalc-ca1
+
+jobs:
+  stop:
+    name: Delete web app and App Service plan
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+    - name: Azure login (OIDC, no stored password)
+      uses: azure/login@v3
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Delete web app (including the staging slot)
+      run: az webapp delete --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name ${{ env.AZURE_WEBAPP_NAME }} || echo "Web app already deleted"
+    - name: Delete App Service plan
+      run: az appservice plan delete --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --name asp-${{ env.AZURE_WEBAPP_NAME }} --yes || echo "Plan already deleted"
