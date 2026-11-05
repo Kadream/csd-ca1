@@ -1,5 +1,5 @@
 # CI/CD pipeline for the Blood Pressure Category Calculator
-# CI (every PR and main): build, unit + BDD tests, code coverage (80% gate), package
+# CI (every PR and main): build, unit + BDD tests, code coverage (80% gate), dependency check, package
 # CD (main only): provision Azure with Bicep -> deploy to staging slot -> E2E tests (Playwright) -> load test (k6) -> approval -> swap to production
 
 name: CI/CD
@@ -46,6 +46,22 @@ jobs:
       run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
     - name: Publish
       run: dotnet publish BPCalculator/BPCalculator.csproj --no-build --configuration Release --output ./publish
+    - name: Dependency check (fail on CVSS 7 or higher)
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'BPCalculator'
+        path: 'publish'
+        format: 'HTML'
+        out: 'reports'
+        args: >
+          --failOnCVSS 7
+          --enableRetired
+    - name: Upload dependency check report
+      if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: dependency-check-report
+        path: reports/
     - name: Upload artifact (release candidate)
       uses: actions/upload-artifact@v7
       with:
