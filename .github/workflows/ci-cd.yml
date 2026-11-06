@@ -173,9 +173,21 @@ jobs:
       with:
         path: performance/load-test.js
 
+  zap-scan:
+    name: Security scan on staging (OWASP ZAP baseline)
+    needs: [provision, load-test]
+    runs-on: ubuntu-latest
+    steps:
+    - name: ZAP baseline scan
+      uses: zaproxy/action-baseline@v0.15.0
+      with:
+        target: ${{ needs.provision.outputs.stagingUrl }}
+        allow_issue_writing: false
+        artifact_name: zap-report
+
   swap-production:
     name: Swap staging to production (blue/green)
-    needs: [provision, deploy-staging, e2e-tests, load-test]
+    needs: [provision, deploy-staging, e2e-tests, load-test, zap-scan]
     runs-on: ubuntu-latest
     environment:
       name: production
