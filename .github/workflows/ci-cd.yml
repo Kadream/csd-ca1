@@ -1,6 +1,6 @@
 # CI/CD pipeline for the Blood Pressure Category Calculator
 # CI (every PR and main): build, unit + BDD tests, code coverage (80% gate), dependency check, package
-# CD (main only): provision Azure with Bicep -> deploy to staging slot -> E2E tests (Playwright) -> load test (k6) -> approval -> swap to production
+# CD (main only): provision Azure with Bicep -> deploy to staging slot -> E2E tests (Playwright) -> load test (k6) -> security scan (ZAP) -> approval -> swap to production
 
 name: CI/CD
 
@@ -133,6 +133,7 @@ jobs:
     name: E2E tests on staging (Playwright)
     needs: [provision, deploy-staging]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: e2e
