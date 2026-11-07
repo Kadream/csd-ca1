@@ -28,6 +28,13 @@ var siteConfig = {
   alwaysOn: true
   minTlsVersion: '1.2'
   ftpsState: 'Disabled'
+
+  appSettings: [
+    {
+      name: 'ASPNETCORE_FORWARDEDHEADERS_ENABLED'
+      value: 'true'
+    }
+  ]
 }
 
 resource webApp 'Microsoft.Web/sites@2024-11-01' = {
@@ -37,6 +44,7 @@ resource webApp 'Microsoft.Web/sites@2024-11-01' = {
   properties: {
     serverFarmId: plan.id
     httpsOnly: true
+    clientAffinityEnabled: false // no ARRAffinity cookies
     siteConfig: siteConfig
   }
 }
@@ -49,6 +57,7 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2024-11-01' = {
   properties: {
     serverFarmId: plan.id
     httpsOnly: true
+    clientAffinityEnabled: false // no ARRAffinity cookies
     siteConfig: siteConfig
   }
 }
