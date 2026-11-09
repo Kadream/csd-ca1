@@ -1,13 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
 
 namespace BPCalculator
 {
@@ -43,9 +39,9 @@ namespace BPCalculator
             // security headers reported by the ZAP baseline scan
             app.Use(async (context, next) =>
             {
-                context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
-                context.Response.Headers["X-Frame-Options"] = "DENY";
-                context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+                context.Response.Headers.ContentSecurityPolicy = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+                context.Response.Headers.XFrameOptions = "DENY";
+                context.Response.Headers.XContentTypeOptions = "nosniff";
                 await next();
             });
 

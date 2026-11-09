@@ -39,7 +39,36 @@ namespace BPCalculator.UnitTests
 
             Assert.IsFalse(page.ModelState.IsValid);
         }
+
+
+        [TestMethod]
+        public void OnGet_DoesNotShowResult()
+        {
+            var page = new BloodPressureModel();
+
+            page.OnGet();
+
+            Assert.IsFalse(page.ShowResult);
+        }
+
+        [TestMethod]
+        public void OnPost_ValidReading_ShowsResult()
+        {
+            var page = new BloodPressureModel { BP = new BloodPressure { Systolic = 120, Diastolic = 80 } };
+
+            page.OnPost();
+
+            Assert.IsTrue(page.ShowResult);
+        }
+
+        [TestMethod]
+        public void OnPost_InvalidReading_DoesNotShowResult()
+        {
+            var page = new BloodPressureModel { BP = new BloodPressure { Systolic = 80, Diastolic = 85 } };
+
+            page.OnPost();
+
+            Assert.IsFalse(page.ShowResult);
+        }
     }
 }
-
-// I GOT HELP FROM CLAUDE FOR THESE TESTS.

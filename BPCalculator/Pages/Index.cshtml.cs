@@ -10,6 +10,9 @@ namespace BPCalculator.Pages
         [BindProperty]                              // bound on POST
         public BloodPressure BP { get; set; }
 
+        // true only after a valid reading has been submitted
+        public bool ShowResult { get; private set; }
+
         // setup initial data
         public void OnGet()
         {
@@ -24,6 +27,7 @@ namespace BPCalculator.Pages
             {
                 ModelState.AddModelError("", "Systolic must be greater than Diastolic");
             }
+            ShowResult = ModelState.IsValid;
             return Page();
         }
     }
