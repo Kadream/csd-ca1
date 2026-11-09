@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 
 namespace BPCalculator
 {
@@ -20,7 +19,7 @@ namespace BPCalculator
         public const int DiastolicMin = 40;
         public const int DiastolicMax = 100;
 
-        // NEW: Category lower limits from the BP chart
+        // Category lower limits from the BP chart
         private const int HighSystolicMin = 140;
         private const int HighDiastolicMin = 90;
         private const int PreHighSystolicMin = 120;
@@ -34,7 +33,7 @@ namespace BPCalculator
         [Range(DiastolicMin, DiastolicMax, ErrorMessage = "Invalid Diastolic Value")]
         public int Diastolic { get; set; }                      // mmHG
 
-        // NEW: Calculate BP category
+        // Calculate BP category
         public BPCategory Category
         {
             get

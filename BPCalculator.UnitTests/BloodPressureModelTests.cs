@@ -72,5 +72,3 @@ namespace BPCalculator.UnitTests
         }
     }
 }
-
-// I GOT HELP FROM CLAUDE FOR THESE TESTS.

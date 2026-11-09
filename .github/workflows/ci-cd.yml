@@ -35,12 +35,15 @@ jobs:
       run: |
            dotnet tool install --global dotnet-sonarscanner
            ~/.dotnet/tools/dotnet-sonarscanner begin /k:"Kadream_csd-ca1" /o:"kadream" /d:sonar.token="$SONAR_TOKEN"
+           /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml"
+           /d:sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,**/*.cshtml"
+
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore --configuration Release
     - name: Test (with code coverage)
-      run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+      run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=cobertura,opencover
     - name: SonarCloud analysis - end
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
