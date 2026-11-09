@@ -1,5 +1,5 @@
 # CI/CD pipeline for the Blood Pressure Category Calculator
-# CI (every PR and main): build, unit + BDD tests, code coverage (80% gate), dependency check, package
+# CI (every PR and main): build, unit + BDD tests, code coverage (80% gate), code analysis (SonarCloud), dependency check, package
 # CD (main only): provision Azure with Bicep -> deploy to staging slot -> E2E tests (Playwright) -> load test (k6) -> security scan (ZAP) -> approval -> swap to production
 
 name: CI/CD
@@ -23,16 +23,28 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v7
+      with: 
+        fetch-depth: 0
     - name: Setup .NET
       uses: actions/setup-dotnet@v6
       with:
         dotnet-version: 10.0.x
+    - name: SonarCloud analysis - begin
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: |
+           dotnet tool install --global dotnet-sonarscanner
+           ~/.dotnet/tools/dotnet-sonarscanner begin /k:"Kadream_csd-ca1" /o:"kadream" /d:sonar.token="$SONAR_TOKEN"
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore --configuration Release
     - name: Test (with code coverage)
       run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+    - name: SonarCloud analysis - end
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: ~/.dotnet/tools/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
     - name: Coverage report (minimum 80% line coverage)
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
