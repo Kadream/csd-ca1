@@ -34,9 +34,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
            dotnet tool install --global dotnet-sonarscanner
-           ~/.dotnet/tools/dotnet-sonarscanner begin /k:"Kadream_csd-ca1" /o:"kadream" /d:sonar.token="$SONAR_TOKEN"
-           /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml"
-           /d:sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,**/*.cshtml"
+           ~/.dotnet/tools/dotnet-sonarscanner begin /k:"Kadream_csd-ca1" /o:"kadream" /d:sonar.token="$SONAR_TOKEN" /d:sonar.cs.opencover.reportsPaths="coverage/**/coverage.opencover.xml" /d:sonar.coverage.exclusions="**/Program.cs,**/Startup.cs,**/*.cshtml"
 
     - name: Restore dependencies
       run: dotnet restore
