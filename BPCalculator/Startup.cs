@@ -43,9 +43,9 @@ namespace BPCalculator
             // security headers reported by the ZAP baseline scan
             app.Use(async (context, next) =>
             {
-                context.Response.Headers["Content-Security-Policy"] = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
-                context.Response.Headers["X-Frame-Options"] = "DENY";
-                context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+                context.Response.Headers.ContentSecurityPolicy = "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'";
+                context.Response.Headers.XFrameOptions = "DENY";
+                context.Response.Headers.XContentTypeOptions = "nosniff";
                 await next();
             });
 
