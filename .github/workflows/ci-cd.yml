@@ -45,7 +45,7 @@ jobs:
     - name: Test (with code coverage)
       run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
     - name: SonarCloud analysis - end
-      run: ~/.dotnet/tools/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}""
+      run: ~/.dotnet/tools/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
     - name: Coverage report (minimum 80% line coverage)
       uses: danielpalme/ReportGenerator-GitHub-Action@v5
       with:
