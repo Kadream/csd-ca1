@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <suppress>
+    <notes><![CDATA[
+      False positives (low confidence name matches) for the .NET OpenTelemetry 1.19 packages used by Application Insights 3.x:
+      CVE-2026-24051, -39882, -39883, -41178 are for OpenTelemetry-Go, CVE-2026-44967 for OpenTelemetry-cpp,
+      CVE-2026-54285 for opentelemetry-js, CVE-2026-40894 is fixed in OpenTelemetry.Api 1.15.3 (we use 1.19.1),
+      CVE-2026-41078 is for OpenTelemetry.Exporter.Jaeger (not used).
+    ]]></notes>
+    <packageUrl regex="true">^pkg:generic/OpenTelemetry(\..+)?@.*$</packageUrl>
+    <vulnerabilityName>CVE-2026-24051</vulnerabilityName>
+    <vulnerabilityName>CVE-2026-39882</vulnerabilityName>
+    <vulnerabilityName>CVE-2026-39883</vulnerabilityName>
+    <vulnerabilityName>CVE-2026-41178</vulnerabilityName>
+    <vulnerabilityName>CVE-2026-44967</vulnerabilityName>
+    <vulnerabilityName>CVE-2026-54285</vulnerabilityName>
+    <vulnerabilityName>CVE-2026-40894</vulnerabilityName>
+    <vulnerabilityName>CVE-2026-41078</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+      False positives (low confidence name matches): these Azure SDK packages are matched to Azure.Identity,
+      which this application does not use. CVE-2023-36414, CVE-2023-36415, CVE-2024-29992 and CVE-2024-35255 are Azure.Identity vulnerabilities.
+    ]]></notes>
+    <packageUrl regex="true">^pkg:generic/(Azure\.Core|Azure\.Monitor\.OpenTelemetry\.Exporter|System\.ClientModel)@.*$</packageUrl>
+    <vulnerabilityName>CVE-2023-36414</vulnerabilityName>
+    <vulnerabilityName>CVE-2023-36415</vulnerabilityName>
+    <vulnerabilityName>CVE-2024-29992</vulnerabilityName>
+    <vulnerabilityName>CVE-2024-35255</vulnerabilityName>
+  </suppress>
+</suppressions>

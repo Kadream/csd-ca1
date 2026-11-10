@@ -20,6 +20,7 @@ namespace BPCalculator
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
+            services.AddApplicationInsightsTelemetry();
             services.AddAntiforgery(options => options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest);
         }
 
