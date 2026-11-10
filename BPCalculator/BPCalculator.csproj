@@ -1,7 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
+    <ApplicationInsightsResourceId>/subscriptions/a5f900c8-cc5f-427a-a9aa-affc61e20b9e/resourcegroups/rg-csd-ca1/providers/microsoft.insights/components/appi-kadream-bpcalc-ca1</ApplicationInsightsResourceId>
+    <UserSecretsId>c59b6c67-8d93-41da-a9bb-0a762c5efed5</UserSecretsId>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="3.2.0" />
+  </ItemGroup>
 
 </Project>
