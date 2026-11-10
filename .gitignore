@@ -262,3 +262,4 @@ __pycache__/
 
 # Reqnroll generated code-behind (re-created on every build)
 *.feature.cs
+/BPCalculator/Properties/serviceDependencies.local.json
