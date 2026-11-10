@@ -69,6 +69,7 @@ jobs:
         args: >
           --failOnCVSS 7
           --enableRetired
+          --suppression dependency-check-suppressions.xml
     - name: Upload dependency check report
       if: ${{ !cancelled() }}
       uses: actions/upload-artifact@v7
