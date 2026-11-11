@@ -20,3 +20,9 @@
     And a diastolic pressure of 85 mmHg
     When the reading is submitted
     Then the reading should be rejected
+
+  Scenario: Calculate the mean arterial pressure
+    Given a systolic pressure of 120 mmHg
+    And a diastolic pressure of 80 mmHg
+    When the mean arterial pressure is calculated
+    Then the mean arterial pressure should be 93 mmHg
