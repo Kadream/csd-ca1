@@ -8,6 +8,7 @@ namespace BPCalculator.BDDTests.StepDefinitions
         private readonly BloodPressure _bp = new BloodPressure();
         private readonly BloodPressureModel _page = new BloodPressureModel();
         private BPCategory _category;
+        private int _map;
 
         [Given("a systolic pressure of {int} mmHg")]
         public void GivenASystolicPressureOf(int systolic)
@@ -44,6 +45,18 @@ namespace BPCalculator.BDDTests.StepDefinitions
         public void ThenTheReadingShouldBeRejected()
         {
             Assert.IsFalse(_page.ModelState.IsValid);
+        }
+
+        [When("the mean arterial pressure is calculated")]
+        public void WhenTheMeanArterialPressureIsCalculated()
+        {
+            _map = _bp.MAP;
+        }
+
+        [Then("the mean arterial pressure should be {int} mmHg")]
+        public void ThenTheMeanArterialPressureShouldBe(int expected)
+        {
+            Assert.AreEqual(expected, _map);
         }
     }
 }

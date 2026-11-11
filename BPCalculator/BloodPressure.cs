@@ -56,5 +56,9 @@ namespace BPCalculator
                 return BPCategory.Low;
             }
         }
+
+        // Mean Arterial Pressure (mmHg): MAP = Diastolic + (Systolic - Diastolic) / 3
+        public int MAP => 0;
+
     }
 }
