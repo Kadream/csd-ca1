@@ -8,6 +8,7 @@ test('shows High Blood Pressure for a reading of 150/100', async ({ page }) => {
   await page.getByRole('button', { name: 'Submit' }).click();
 
   await expect(page.getByText('High Blood Pressure', { exact: true })).toBeVisible();
+  await expect(page.getByText('MAP: 117 mmHg')).toBeVisible();
 });
 
 test('rejects a reading where systolic is not higher than diastolic', async ({ page }) => {

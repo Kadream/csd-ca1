@@ -58,7 +58,7 @@ namespace BPCalculator
         }
 
         // Mean Arterial Pressure (mmHg): MAP = Diastolic + (Systolic - Diastolic) / 3
-        public int MAP => 0;
+        public int MAP => (int)Math.Round(Diastolic + (Systolic - Diastolic) / 3.0);
 
     }
 }

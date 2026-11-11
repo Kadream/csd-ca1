@@ -28,9 +28,11 @@
             @if (Model.ShowResult)
             {
                 <div class="form-group">
-                    @Html.DisplayFor(model => model.BP.Category)
+                    <span>@Html.DisplayFor(model => model.BP.Category)</span>
+                    <span>(MAP: @Model.BP.MAP mmHg)</span>
                 </div>
             }
+            <small class="text-muted">MAP = Diastolic + (Systolic - Diastolic) / 3</small>
         </form>
     </div>
 </div>
